@@ -1,6 +1,12 @@
+using AdvertisingService.Repositories;
+using AdvertisingService.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddSingleton<PlatformRepository>();
+builder.Services.AddSingleton<PlatformService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,22 +1,32 @@
+using AdvertisingService.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdvertisingService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PlatformsController : ControllerBase
+    public class PlatformsController(PlatformService service) : ControllerBase
     {
+        private readonly PlatformService _service = service;
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost("upload")]
+        public IActionResult Upload([FromQuery] string filePath)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            if (!System.IO.File.Exists(filePath))
+                return BadRequest("File not found");
+
+            _service.LoadFromFile(filePath);
+            return Ok("Platforms loaded");
+        }
+
+        [HttpGet("search")]
+        public IActionResult Search([FromQuery] string location)
+        {
+            if (string.IsNullOrWhiteSpace(location))
+                return BadRequest("Location is required");
+
+            var result = _service.Search(location);
+            return Ok(result);
         }
     }
 }
